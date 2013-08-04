@@ -54,7 +54,7 @@ let getAmortizingLoanSchedule
     let getFinalBalanceFor = getNominalSchedule >> (fun (sch:nominalPaymentSchedule) -> sch.Head.NominalBalance) // note the function composition here.
     let noPayments         = float (dates.Length-1)
     let p1                 = initialNominal/noPayments // Get 2 points on the line.
-    let p2                 = p1*1.5                    // and use that t solve for required payment.
+    let p2                 = p1*1.5                    // and use that t solve for required payment. Actual values don't matter
     let finalBalance1      = getFinalBalanceFor p1
     let finalBalance2      = getFinalBalanceFor p2
     let m                  = (p2-p1)/(finalBalance2-finalBalance1)
