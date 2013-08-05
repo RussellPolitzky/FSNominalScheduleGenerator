@@ -14,15 +14,15 @@ type nominalPaymentSchedule = paymentScheduleItem list
 ///--------------------------------------------------------
 /// Get the final nominal balance for an amortizing loan
 /// with the given residual.  Note that this returns the 
-/// schedule in revers order so that the last item in 
-/// is at the head of the returned list.
+/// schedule in reverse order so that the last item in 
+/// it is at the head of the returned list.
 ///--------------------------------------------------------
 let getNominalSchedule (initialNominal:float) 
                        (rate:float) 
                        (basis:int)
                        (dates:DateTime list)
                        (payment:float) =
-    dates.Tail // skip the first one (tail skips the first entry in a list, the head, leaving it's tail
+    dates.Tail // skip the first one (tail skips the first entry in a list, that being the head, leaving it's tail)
     |> List.fold 
         (fun (schdl:nominalPaymentSchedule) date -> 
                 let previous            = schdl.Head
@@ -41,7 +41,8 @@ let getNominalSchedule (initialNominal:float)
 
 ///--------------------------------------------------------
 /// Get an amortizing loan schedule for the given initial  
-/// nominal, residual, interest rate (SIMP) and MM basis.
+/// nominal, residual, interest rate (SIMP), MM basis and 
+/// payment dates.
 ///--------------------------------------------------------
 let getAmortizingLoanSchedule
         (initialNominal:float) 
@@ -50,11 +51,11 @@ let getAmortizingLoanSchedule
         (basis         :int) 
         (dates         :DateTime list) =
 
-    let getNominalSchedule = getNominalSchedule initialNominal rate basis dates
+    let getNominalSchedule = getNominalSchedule initialNominal rate basis dates                                  // note the partial application here.
     let getFinalBalanceFor = getNominalSchedule >> (fun (sch:nominalPaymentSchedule) -> sch.Head.NominalBalance) // note the function composition here.
     let noPayments         = float (dates.Length-1)
     let p1                 = initialNominal/noPayments // Get 2 points on the line.
-    let p2                 = p1*1.5                    // and use that t solve for required payment. Actual values don't matter
+    let p2                 = p1*1.5                    // and use that to solve for required payment. Actual values don't matter
     let finalBalance1      = getFinalBalanceFor p1
     let finalBalance2      = getFinalBalanceFor p2
     let m                  = (p2-p1)/(finalBalance2-finalBalance1)
@@ -63,8 +64,10 @@ let getAmortizingLoanSchedule
 
 
 
+
+
 //------------------------------------------------------------------------------------------------------------------------
-// Initial attempt -------------------------------------------------------------------------------------------------------
+// Initial attempt 
 // 
 // This works but its not a great design.  The design above is quite a bit nicer.
 //------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +76,6 @@ type private accum = {
     mutable NominalBalance : float 
     mutable PreviousDate   : DateTime 
     }
-
 
 ///--------------------------------------------------------
 /// Get the final nominal balance for an amortizing loan
